@@ -1,0 +1,31 @@
+using System;
+using System.Collections.Generic;
+
+public class ShuffleExample
+{
+    public static void Main()
+    {
+        List<int> numbers = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        Console.WriteLine("Список чисел до перемешки: " + string.Join(", ", numbers));
+
+        Shuffle(numbers);
+
+        Console.WriteLine("Список числе после перемешки: " + string.Join(", ", numbers));
+        Console.WriteLine("тыкни enter для выхода...");
+        Console.ReadLine();
+    }
+
+    public static void Shuffle<MamaMia>(List<MamaMia> list)
+    {
+        Random random = new Random();
+        int n = list.Count;
+
+        for (int i = n - 1; i > 0; i--)
+        {
+            int j = random.Next(i + 1);
+            MamaMia temp = list[i];
+            list[i] = list[j];
+            list[j] = temp;
+        }
+    }
+}
