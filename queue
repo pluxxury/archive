@@ -14,12 +14,22 @@ class Program
             peopleQueue.Enqueue(("Person", i));
         }
 
-        // Обработка очереди людей
         while (peopleQueue.Count > 0)
         {
             Console.WriteLine($"Next person: {peopleQueue.Peek().Item1}");
             peopleQueue.Dequeue();
-            Console.WriteLine("Processing...");
+            Console.WriteLine("Press Enter to process the next person...");
+
+            ConsoleKeyInfo keyInfo = Console.ReadKey();
+            if (keyInfo.Key == ConsoleKey.Enter)
+            {
+                Console.WriteLine("Processing...");
+            }
+            else
+            {
+                Console.WriteLine("Please press Enter to continue.");
+                Console.ReadLine();
+            }
         }
 
         Console.WriteLine("All people have been processed.");
