@@ -6,10 +6,11 @@ class Program
 {
     static void Main(string[] args)
     {
+        int peopleCount = 5; // Количество людей в очереди
         Queue<(string, int)> peopleQueue = new Queue<(string, int)>();
 
         // Заполнение очереди людей
-        for (int i = 1; i <= 5; i++)
+        for (int i = 1; i <= peopleCount; i++)
         {
             peopleQueue.Enqueue(("Person", i));
         }
@@ -24,6 +25,10 @@ class Program
             if (keyInfo.Key == ConsoleKey.Enter)
             {
                 Console.WriteLine("Processing...");
+
+                int servedCount = peopleQueue.Count;
+                int remainingCount = peopleCount - servedCount;
+                Console.WriteLine($"Served: {servedCount}, Remaining: {remainingCount}");
             }
             else
             {
