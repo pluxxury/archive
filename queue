@@ -1,0 +1,27 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Queue<(string, int)> peopleQueue = new Queue<(string, int)>();
+
+        // Заполнение очереди людей
+        for (int i = 1; i <= 5; i++)
+        {
+            peopleQueue.Enqueue(("Person", i));
+        }
+
+        // Обработка очереди людей
+        while (peopleQueue.Count > 0)
+        {
+            Console.WriteLine($"Next person: {peopleQueue.Peek().Item1}");
+            peopleQueue.Dequeue();
+            Console.WriteLine("Processing...");
+        }
+
+        Console.WriteLine("All people have been processed.");
+    }
+}
