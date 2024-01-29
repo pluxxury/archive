@@ -1,0 +1,82 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        int peopleCount = 15;
+        Queue<(string, int)> peopleQueue = new Queue<(string, int)>();
+        int servedCount = 0;
+
+        List<(string, decimal)> products = new List<(string, decimal)>
+        {
+            ("Шампунь", 100),
+            ("Зубная паста", 50),
+            ("Туалетная бумага", 30),
+            ("Хлопок", 20),
+            ("Соль", 15),
+            ("Молоко", 40),
+            ("Кефир", 35),
+            ("Масло", 50),
+            ("Хлеб", 25),
+            ("Сок", 30),
+            ("Яйца", 60),
+            ("Рыба", 120)
+        };
+
+        for (int i = 1; i <= peopleCount; i++)
+        {
+            peopleQueue.Enqueue(("покупатель", i));
+        }
+
+        decimal totalMoney = 0;
+
+        while (peopleQueue.Count > 0)
+        {
+            Console.WriteLine($"Следующий: {peopleQueue.Peek().Item1}");
+            peopleQueue.Dequeue();
+            Console.WriteLine("Нажмите Enter чтобы обслужить следующего...");
+
+            ConsoleKeyInfo keyInfo = Console.ReadKey();
+            if (keyInfo.Key == ConsoleKey.Enter)
+            {
+                Console.WriteLine("Обслуживание...");
+
+                int remainingCount = peopleQueue.Count;
+                servedCount++;
+                Console.WriteLine($"обслужено: {servedCount}, осталось: {remainingCount}");
+
+                Random random = new Random();
+                int chosenProductCount = random.Next(1, 3);
+                decimal chosenProductPrice = 0;
+                List<(string, decimal)> chosenProducts = new List<(string, decimal)>();
+
+                for (int i = 0; i < chosenProductCount; i++)
+                {
+                    int chosenProductIndex = random.Next(products.Count);
+                    chosenProductPrice += products[chosenProductIndex].Item2;
+                    chosenProducts.Add(products[chosenProductIndex]);
+                }
+
+                totalMoney += chosenProductPrice;
+                Console.WriteLine($"Покупатель выбрал товары:");
+                foreach (var product in chosenProducts)
+                {
+                    Console.WriteLine($"- {product.Item1}, цена: {product.Item2} рублей.");
+                }
+                Console.WriteLine($"Сумма денег, которую принес покупатель: {chosenProductPrice} рублей.");
+            }
+            else
+            {
+                Console.WriteLine("Нажмите Enter чтобы продолжить");
+                Console.ReadLine();
+            }
+        }
+
+        Console.WriteLine("Все люди обслужены");
+        Console.WriteLine($"Сумма денег, которую принесли покупатели: {totalMoney} рублей.");
+        Console.ReadLine();
+    }
+}
