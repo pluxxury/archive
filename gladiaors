@@ -1,0 +1,63 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp24
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            int Vert = 5;
+            int Hor = 5;
+            char charPlayer = '0';
+            Player player = new Player(charPlayer, Vert, Hor);
+            Rendering rendering = new Rendering();
+            rendering.DrawCharacter(player);
+            Console.Read();
+
+        }
+        class Player
+        {
+            public Player(char charPlayer, int x, int y)
+            {
+                CharPlayer = charPlayer;
+                X = x;
+                Y = y;
+            }
+            public int X { get; private set; }
+            public int Y { get; private set; }
+            public char CharPlayer { get; private set; }
+        }
+        class Rendering
+        {
+            public void DrawCharacter(Player player)
+            {
+                Console.SetCursorPosition(player.X, player.Y);
+                Console.Write(player.CharPlayer);
+
+
+            }
+        }
+        interface InterfaceGLadiator
+        {
+            string TypeGladiator { get; }
+            string Name { get; }
+
+        }
+        abstract class Gladiator
+        {
+            abstract public void PrintCombatSystem();
+            virtual protected void PrintGladiator(string name, string typeGladiator)
+            {
+                Console.WriteLine($"меня зовут {name} и я гладиатор типа {typeGladiator}");
+            }
+        }
+        class Frakiets:Gladiator, InterfaceGLadiator
+        {
+
+        }
+    }
+}
