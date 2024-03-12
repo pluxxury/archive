@@ -1,0 +1,21 @@
+#include <iostream>
+#include <iomanip>
+#include <math.h>
+using namespace std;
+
+int main() {
+    double R, r, S;
+
+    cout << "Введите внешний радиус кольца: ";
+    cin >> R;
+
+    cout << "Введите внутренний радиус кольца: "<< endl;
+    cin >> r;
+
+    S = M_PI * (R * R - r * r);
+
+    cout << fixed << setprecision(2);
+    cout << "Площадь кольца равна: " << S << " единиц площади" << endl;
+
+    return 0;
+} 
