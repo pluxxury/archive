@@ -4,7 +4,7 @@
 using namespace std;
 
 int main() {
-    double R, r, totalArea;
+    double R, r, S;
 
     cout << "Введите внешний радиус кольца: ";
     cin >> R;
@@ -12,10 +12,10 @@ int main() {
     cout << "Введите внутренний радиус кольца: ";
     cin >> r;
 
-    totalArea = M_PI * (R * R - r * r);
+    S = M_PI * (R * R - r * r);
 
     cout << fixed << setprecision(2);
-    cout << "Площадь кольца равна: " << totalArea << " единиц площади" << endl;
+    cout << "Площадь кольца равна: " << S << " единиц площади" << endl;
 
     return 0;
 }
