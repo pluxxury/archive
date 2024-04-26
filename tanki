@@ -1,19 +1,31 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.Remoting.Activation;
 
-namespace tank
+namespace ConsoleApp15
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-
+            Game game = new Game();
+            game.StartGame();
         }
+    }
+
+    static class Comand
+    {
+        public const int MoveUp = 1;
+        public const int MoveDown = 2;
+        public const int MoveLeft = 3;
+        public const int MoveRight = 4;
+        public const int Shoot = 5;
+
+        public const ConsoleKey KeyMoveUp = ConsoleKey.UpArrow;
+        public const ConsoleKey KeyMoveDown = ConsoleKey.DownArrow;
+        public const ConsoleKey KeyMoveLeft = ConsoleKey.LeftArrow;
+        public const ConsoleKey KeyMoveRight = ConsoleKey.RightArrow;
+        public const ConsoleKey KeyShoot = ConsoleKey.Spacebar;
     }
 
     abstract class GameObject
@@ -21,57 +33,54 @@ namespace tank
         protected int OldHorizontalPosition;
         protected int OldVerticalPosition;
 
-        protected const int ComandMoveUp = 1;
-        protected const int ComandMoveDown = 2;
-        protected const int ComandMoveLeft = 3;
-        protected const int ComandMoveRight = 4;
-
-        public int Id { get; protected set; }
-
         public int HorizontalPosition { get; protected set; }
 
         public int VerticalPosition { get; protected set; }
 
+        public int Id { get; protected set; }
+
+        public int CuntLives { get; protected set; }
+
+        public int CountLives { get; protected set; }
+
         public int Direction { get; protected set; }
 
-        public int Lives { get; protected set; }
+        public int IsLive { get; protected set; }
 
-        public bool IsLive { get; protected set; }
-
-        abstract public void Management(int direction, Level level);
+        public abstract void Management(int direction, bool isBatontPick);
 
         public abstract void DealingDamage(int damage);
+
+        protected void ChoosingDirectionTravel(int direction, bool isBatontPick)
+        {
+            if (isBatontPick)
+            {
+                switch (direction)
+                {
+                    case Comand.MoveUp:
+                        Move(0, -1);
+                        break;
+
+                    case Comand.MoveDown:
+                        Move(0, 1);
+                        break;
+
+                    case Comand.MoveLeft:
+                        Move(-1, 0);
+                        break;
+
+                    case Comand.MoveRight:
+                        Move(1, 0);
+                        break;
+                }
+            }
+        }
 
         private void Move(int horizontalPosition, int verticalPosition)
         {
             HorizontalPosition += horizontalPosition;
             VerticalPosition += verticalPosition;
         }
-
-        protected void Revival(int horizontalPosition, int verticalPosition, bool isStatus);
-
-        protected void ChoosingDirectionTravel(int direction)
-        {
-            switch (direction)
-            {
-                case ComandMoveUp:
-                    Move(0, -1);
-                    break;
-
-                case ComandMoveDown:
-                    Move(0, 1);
-                    break;
-
-                case ComandMoveLeft:
-                    Move(-1, 0);
-                    break;
-
-                case ComandMoveRight:
-                    Move(1, 1);
-                    break;
-            }
-        }
-
     }
 
     abstract class Asset
@@ -82,67 +91,123 @@ namespace tank
         {
             string[] file = File.ReadAllLines(path);
 
-            char[,] map = new char[GetMaxLengtheOfLine(file), file.Length];
+            char[,] map = new char[GetMaxLenghtOfLine(file), file.Length];
 
-            for (int x = 0; x < file.Length; x++)
+            for (int x = 0; x < file[0].Length; x++)
                 for (int y = 0; y < file.Length - 1; y++)
-                    map[x, y] = file[y][x]; 
+                    map[x, y] = file[y][x];
+
             return map;
         }
-        private int GetMaxLengtheOfLine(string[] file)
+
+        private int GetMaxLenghtOfLine(string[] lines)
         {
-            int maxLength = lines.Lebgth;
+            int maxLenght = lines.Length;
 
             foreach (var line in lines)
-                if (line.Length > maxLength)
-                    maxLength = line.Length;
-            return maxLength;
+                if (line.Length > maxLenght)
+                    maxLenght = line.Length;
+
+            return maxLenght;
         }
     }
 
-    class Tank : GameObject
+    class Tanck : GameObject
     {
-        public Tank(int verticalPosition, int horizontalPosition, int direction)
+        public Tanck(int horizontalposition, int verticalposition, int direction)
+        {
+            HorizontalPosition = horizontalposition;
+            VerticalPosition = verticalposition;
+            Direction = direction;
+            CuntLives = 4;
+            IsLive = true;
+        }
+
+        public override void Management(int direction, bool isBatontPick)
+        {
+            OldHorizontalPosition = HorizontalPosition;
+            OldVerticalPosition = VerticalPosition;
+
+            if (direction == Direction)
+                ChoosingDirectionTravel(direction, isBatontPick);
+            else
+                Direction = direction;
+        }
+
+        public override void DealingDamage(int damage)
+        {
+            if (CuntLives > 0)
+                CuntLives -= damage;
+            else
+                IsLive = false;
+        }
+    }
+
+    class Projectile : GameObject
+    {
+        public Projectile(int id, int verticalPosition, int horizontalPosition, int direction)
+        {
+            Id = id;
+            Direction = direction;
+
+            DetermineAppearanceCoordinate(verticalPosition, horizontalPosition, direction);
+
+            CountLives = 1;
+            IsLive = true;
+        }
+
+        public override void DealingDamage(int damage)
+        {
+            CountLives--;
+            if (Convert.ToBoolean(damage))
+                IsLive = false;
+        }
+
+        public override void Management(int direction, Level level,bool isBattonPick)
+        {
+            if (IsLive)
+                ChoosingDirectionTravel(Direction, isBattonPick);
+        }
+
+        private void AssingCoordinates(int verticalPosition, int horizontalPosition)
         {
             VerticalPosition = verticalPosition;
             HorizontalPosition = horizontalPosition;
-            Direction = direction;
-            Lives = 4;
-            IsLive = true;
         }
-    }
-    class Level : Asset 
-    {
 
-    }
-    class Sprait : Asset 
-    {
-        private List<char[,]> _files = new List<char[,]>();
-
-        public Sprait(string files) 
+        private void DetermineAppearanceCoordinate(int verticalPosition, int horozontPosition, int direction)
         {
-            foreach (string file in files)
-                _files.Add(ReadFile(file));
-        }
+            int step = 1;
 
-        public override char[,] GetMatrix(int direction)
-        {
-            int index = direction - 1;
-            char[,] chars = new char[_files[index].GetLength(0), _files[index].Length];
-
-            for (int y = 0; y < _files[index].GetLength(0); y++)
-                for (int x = 0; x < _files[index].GetLength(i); x++)
-                    chars[y, x] = _files[index][y, x];
-
-            return chars;
+            switch (direction)
+            {
+                case Comand.MoveUp:
+                    AssingCoordinates(horozontPosition - step, verticalPosition);
+                    break;
+                case Comand.MoveDown:
+                    AssingCoordinates(horozontPosition + step, verticalPosition);
+                    break;
+                case Comand.MoveLeft:
+                    AssingCoordinates(horozontPosition, verticalPosition - step);
+                    break;
+                case Comand.MoveRight:
+                    AssingCoordinates(horozontPosition, verticalPosition + step);
+                    break;
+            }
         }
     }
 
-    class Controler
+    class Level : Asset
     {
-        private int _minRandom = 1;
-        private int _maxRandom = 6;
+        private char[,] _matrix;
+        private List<char> 
+        private char _charEmptyCell = ' ';
 
-        public void Management(GameObject gameObject, Level level, Random random = null);
+        public Level(string path)
+        {
+            _matrix = ReadFile(path);
+            
+        }
     }
-}   
+}
+
