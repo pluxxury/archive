@@ -163,10 +163,10 @@ namespace ConsoleApp15
                 IsLive = false;
         }
 
-        public override void Management(int direction, Level level,bool isBattonPick)
+        public override void Management(int direction, bool isBattonPick)
         {
             if (IsLive)
-                ChoosingDirectionTravel(Direction, isBattonPick);
+                ChoosingDirectionTravel(direction, isBattonPick);
         }
 
         private void AssingCoordinates(int verticalPosition, int horizontalPosition)
@@ -210,4 +210,3 @@ namespace ConsoleApp15
         }
     }
 }
-
