@@ -1,0 +1,104 @@
+using System;
+using System.Collections.Generic;
+
+namespace UserDatabase
+{
+    class Program
+    {
+        static List<User> users = new List<User>();
+
+        static void Main(string[] args)
+        {
+            while (true)
+            {
+                Console.WriteLine("1. Добавить Пользователя ");
+                Console.WriteLine("2. Активировать пользователя");
+                Console.WriteLine("3. Удалить пользователя");
+                Console.WriteLine("4. Выйти");
+                Console.Write("Выберите опцию: ");
+
+                int option = Convert.ToInt32(Console.ReadLine());
+
+                switch (option)
+                {
+                    case 1:
+                        AddUser();
+                        break;
+                    case 2:
+                        ActivateUser();
+                        break;
+                    case 3:
+                        DeleteUser();
+                        break;
+                    case 4:
+                        Environment.Exit(0);
+                        break;
+                    default:
+                        Console.WriteLine("Invalid option. Try again.");
+                        break;
+                }
+            }
+        }
+
+        static void AddUser()
+        {
+            Console.Write("Введите имя пользователя: ");
+            string name = Console.ReadLine();
+            Console.Write("Введите статус пользователя (активен/неактивен): ");
+            string status = Console.ReadLine();
+
+            User user = new User(name, status);
+            users.Add(user);
+
+            Console.WriteLine("Пользователь успешно добавлен!");
+        }
+
+        static void ActivateUser()
+        {
+            Console.Write("Введите имя пользователя для активации: ");
+            string name = Console.ReadLine();
+
+            foreach (User user in users)
+            {
+                if (user.Name == name)
+                {
+                    user.Status = "активен";
+                    Console.WriteLine(" Пользователь!");
+                    return;
+                }
+            }
+
+            Console.WriteLine("User not found.");
+        }
+
+        static void DeleteUser()
+        {
+            Console.Write("Enter user name to delete: ");
+            string name = Console.ReadLine();
+
+            foreach (User user in users)
+            {
+                if (user.Name == name)
+                {
+                    users.Remove(user);
+                    Console.WriteLine("User deleted successfully!");
+                    return;
+                }
+            }
+
+            Console.WriteLine("User not found.");
+        }
+    }
+
+    class User
+    {
+        public string Name { get; set; }
+        public string Status { get; set; }
+
+        public User(string name, string status)
+        {
+            Name = name;
+            Status = status;
+        }
+    }
+}
