@@ -1,0 +1,258 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace Hafmen
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Koder koder = new Koder("text.txt");
+            koder.Compressed();
+        }
+    }
+}
+
+
+
+
+
+
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Hafmen
+{
+    public class Node
+    {
+        private const string KeyLeft = "0";
+        private const string KeyRight = "1";
+
+        private Node _left;
+        private Node _right;
+
+        public Node(int length, string symbol)
+        {
+            Mass = length;
+            Symbol = symbol;
+            Key = "";
+        }
+
+        public int Mass { get; private set; }
+        public string Key { get; private set; }
+        public string Symbol { get; private set; }
+
+        public void Add(Node node)
+        {
+            if (node.Mass >= Mass)
+            {
+                if (_right == null)
+                {
+                    _right = node;
+                    _right.SetKey(KeyRight);
+                    Console.WriteLine($"правая {_right.Symbol} - {_right.Mass} - {_right.Key}");
+                    Mass += _right.Mass;
+                    Symbol += _right.Symbol;
+                }
+            }
+            else
+            {
+                if (_left == null)
+                {
+                    _left = node;
+                    _left.SetKey(KeyLeft);
+                    Console.WriteLine($"левая {_left.Symbol} - {_left.Mass} - {_left.Key}");
+                    Mass += _left.Mass;
+                    Symbol += _left.Symbol;
+                }
+            }
+        }
+
+        public void SetKey(string key)
+        {
+            Key = key;
+            if (_left != null) _left.SetKey(Key + KeyLeft);
+            if (_right != null) _right.SetKey(Key + KeyRight);
+        }
+
+        public string GetKey(int mass, string symbol)
+        {
+            if (_left != null && _left.Mass == mass && _left.Symbol == symbol)
+                return KeyLeft;
+            if (_right != null && _right.Mass == mass && _right.Symbol == symbol)
+                return KeyRight;
+            if (_left != null)
+                return KeyLeft + _left.GetKey(mass, symbol);
+            if (_right != null)
+                return KeyRight + _right.GetKey(mass, symbol);
+            return "";
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Hafmen
+{
+    public class Koder
+    {
+        private Node _root;
+        private string _original;
+        private string _compressed;
+        private Dictionary<char, int> _frequencyTable;
+
+        public Koder(string path)
+        {
+            _original = File.ReadAllText(path);
+            _frequencyTable = new Dictionary<char, int>();
+            _compressed = "";
+            _root = null;
+        }
+
+        public void Compressed()
+        {
+            List<Node> nodes = new List<Node>();
+
+            foreach (char ch in _original)
+            {
+                if (_frequencyTable.ContainsKey(ch))
+                    _frequencyTable[ch]++;
+                else
+                    _frequencyTable.Add(ch, 1);
+            }
+
+            foreach (var item in _frequencyTable)
+            {
+                nodes.Add(new Node(item.Value, item.Key.ToString()));
+            }
+
+            while (nodes.Count > 1)
+            {
+                nodes.Sort((x, y) => x.Mass.CompareTo(y.Mass));
+
+                Node nodeOne = nodes[0];
+                Node nodeTwo = nodes[1];
+
+                Node parent = new Node(nodeOne.Mass + nodeTwo.Mass, nodeOne.Symbol + nodeTwo.Symbol);
+                parent.Add(nodeOne);
+                parent.Add(nodeTwo);
+
+                nodes.Remove(nodeOne);
+                nodes.Remove(nodeTwo);
+                nodes.Add(parent);
+            }
+
+            _root = nodes[0];
+            _root.SetKey("");
+
+            foreach (char ch in _original)
+            {
+                _compressed += _root.GetKey(_frequencyTable[ch], ch.ToString());
+            }
+
+            Console.WriteLine(_compressed);
+
+            byte[] compressedBytes = GetByteArray(_compressed);
+            File.WriteAllBytes("test.txt", compressedBytes);
+        }
+
+        private byte[] GetByteArray(string bits)
+        {
+            List<byte> data = new List<byte>();
+            byte currentByte = 0;
+            int bitCount = 0;
+
+            foreach (char bit in bits)
+            {
+                currentByte = (byte)((currentByte << 1) | (bit - '0'));
+                bitCount++;
+
+                if (bitCount == 8)
+                {
+                    data.Add(currentByte);
+                    currentByte = 0;
+                    bitCount = 0;
+                }
+            }
+
+            if (bitCount > 0)
+            {
+                currentByte = (byte)(currentByte << (8 - bitCount));
+                data.Add(currentByte);
+            }
+
+            return data.ToArray();
+        }
+    }
+}
+
+
+
+
+
+
+
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Hafmen
+{
+    internal class Dekoder
+    {
+        private string[] _original;
+        private string[] _restored;
+
+        public Dekoder(string path)
+        {
+            _original = File.ReadAllLines(path);
+        }
+
+        public void Decoder()
+        {
+            _restored = DecodeString();
+            File.WriteAllLines("DecodeFile.txt", _restored);
+        }
+
+        private string[] DecodeString()
+        {
+            return new string[0];
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
